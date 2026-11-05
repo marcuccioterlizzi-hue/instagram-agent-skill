@@ -326,6 +326,36 @@ skills/ig-profile/rubric.json      the 100-point profile score
 templates/voice.md                 your voice profile. Fill this in first.
 ```
 
+## Also included: the Founder skills
+
+This repo also bundles the eleven skills from
+[founder-skill](https://github.com/Jakeschincariol/founder-skill) (MIT), which
+test a business before you launch it:
+
+| command | job |
+| --- | --- |
+| `/founder-board` | Board of Directors: three framework sub-agents score the idea and vote |
+| `/founder-competitors` | Competitor Scout: direct, indirect and substitute competitors, sourced |
+| `/founder-consumer` | Consumer Panel: 100 buyer agents built from your target customer |
+| `/founder-pricing` | Pricing Strategist: acceptable price range from the panel's answers |
+| `/founder-offer` | The offer |
+| `/founder-cfo` | CFO: unit economics and real margins |
+| `/founder-marketing` | Marketing director |
+| `/founder-brand` | Brand |
+| `/founder-ops` | Operations |
+| `/founder-launch` | Launch plan |
+| `/founder-plan` | Compiles everything into the business plan |
+
+Install them the same way as the Instagram skills:
+
+```bash
+cp -r instagram-agent-skill/skills/founder-* ~/.claude/skills/
+```
+
+The Founder tools (`founder-cfo/unit_economics.py`,
+`founder-consumer/panel.py`, `founder-pricing/van_westendorp.py`,
+`founder-plan/compile.py`) need Python 3.8+ and nothing else.
+
 ## Credit
 
 Made by Jake Schincariol, [opusjake.ai](https://opusjake.ai).
