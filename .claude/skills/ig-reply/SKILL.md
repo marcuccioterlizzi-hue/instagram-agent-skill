@@ -9,6 +9,15 @@ description: >-
 
 # ig-reply
 
+## Voice
+
+Before you write a single line, read `voice.md` at the root of this
+repository. It is the user's voice profile: who they are, how they talk, what
+they believe, what is off limits, the proof they can use and their CTA. Every
+draft this skill produces follows it. If a field is empty, do not invent it:
+leave `{{placeholder}}` and say what is missing. If the file does not exist,
+fall back to `~/.claude/instagram/voice.md`.
+
 The comment thread under your own post is where reach is decided. Every reply
 is another interaction on the post, replies arriving in the first hour do most
 of the work, and on Instagram a reply can also be a Reel, which is the single

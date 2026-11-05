@@ -9,12 +9,22 @@ description: >-
 
 # ig-plan
 
+## Voice
+
+Before you write a single line, read `voice.md` at the root of this
+repository. It is the user's voice profile: who they are, how they talk, what
+they believe, what is off limits, the proof they can use and their CTA. Every
+draft this skill produces follows it. If a field is empty, do not invent it:
+leave `{{placeholder}}` and say what is missing. If the file does not exist,
+fall back to `~/.claude/instagram/voice.md`.
+
 The control room. Everything else in this pack executes; this decides what gets
 executed. Run it once a week, on the same day.
 
 ## Input
 
-If `~/.claude/instagram/voice.md`, `swipe.md` and `log.md` exist, read them.
+If `voice.md` (repository root), `~/.claude/instagram/swipe.md` and
+`~/.claude/instagram/log.md` exist, read them.
 The swipe file is the user's own evidence from `/ig-viral` about which formulas
 are landing in their niche right now, and it outranks anything in this file.
 The log stops the plan repeating a theme from the last fortnight.

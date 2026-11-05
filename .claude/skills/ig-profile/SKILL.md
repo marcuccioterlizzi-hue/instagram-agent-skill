@@ -10,6 +10,15 @@ description: >-
 
 # ig-profile
 
+## Voice
+
+Before you write a single line, read `voice.md` at the root of this
+repository. It is the user's voice profile: who they are, how they talk, what
+they believe, what is off limits, the proof they can use and their CTA. Every
+draft this skill produces follows it. If a field is empty, do not invent it:
+leave `{{placeholder}}` and say what is missing. If the file does not exist,
+fall back to `~/.claude/instagram/voice.md`.
+
 Almost everybody optimises the wrong thing here. The profile is not a
 storefront people browse. It is a **decision screen**, arrived at from one
 reel, and it gets about three seconds to answer one question: is there more of

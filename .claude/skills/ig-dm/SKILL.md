@@ -10,6 +10,15 @@ description: >-
 
 # ig-dm
 
+## Voice
+
+Before you write a single line, read `voice.md` at the root of this
+repository. It is the user's voice profile: who they are, how they talk, what
+they believe, what is off limits, the proof they can use and their CTA. Every
+draft this skill produces follows it. If a field is empty, do not invent it:
+leave `{{placeholder}}` and say what is missing. If the file does not exist,
+fall back to `~/.claude/instagram/voice.md`.
+
 Instagram DMs are the only place on the platform where money actually changes
 hands, and they are also where most accounts burn the goodwill their content
 earned. The difference is entirely about who moved first.

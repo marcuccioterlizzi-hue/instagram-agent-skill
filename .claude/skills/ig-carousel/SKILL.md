@@ -9,6 +9,15 @@ description: >-
 
 # ig-carousel
 
+## Voice
+
+Before you write a single line, read `voice.md` at the root of this
+repository. It is the user's voice profile: who they are, how they talk, what
+they believe, what is off limits, the proof they can use and their CTA. Every
+draft this skill produces follows it. If a field is empty, do not invent it:
+leave `{{placeholder}}` and say what is missing. If the file does not exist,
+fall back to `~/.claude/instagram/voice.md`.
+
 Carousels are the highest-dwell format on the grid, because a swipe is an
 interaction and a scroll is not. They also get a second chance: Instagram can
 show a carousel again starting from a later slide to someone who did not engage

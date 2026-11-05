@@ -10,6 +10,15 @@ description: >-
 
 # ig-audit
 
+## Voice
+
+Before you write a single line, read `voice.md` at the root of this
+repository. It is the user's voice profile: who they are, how they talk, what
+they believe, what is off limits, the proof they can use and their CTA. Every
+draft this skill produces follows it. If a field is empty, do not invent it:
+leave `{{placeholder}}` and say what is missing. If the file does not exist,
+fall back to `~/.claude/instagram/voice.md`.
+
 The only honest source of what works for an account is that account. Every
 rule in every Instagram guide, including the ones in this pack, is a prior.
 The user's own last 30 posts are the evidence.

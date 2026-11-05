@@ -9,6 +9,15 @@ description: >-
 
 # ig-comment
 
+## Voice
+
+Before you write a single line, read `voice.md` at the root of this
+repository. It is the user's voice profile: who they are, how they talk, what
+they believe, what is off limits, the proof they can use and their CTA. Every
+draft this skill produces follows it. If a field is empty, do not invent it:
+leave `{{placeholder}}` and say what is missing. If the file does not exist,
+fall back to `~/.claude/instagram/voice.md`.
+
 Commenting is the highest-leverage twenty minutes on Instagram and the easiest
 to do badly. A comment near the top of a reel with 40,000 views is seen by more
 people than most accounts' own posts, and it is the one place where a stranger
