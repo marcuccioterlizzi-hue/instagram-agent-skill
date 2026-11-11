@@ -48,7 +48,27 @@ for _ in range(900):
     stars[y,x]=(b,b*0.92,b*0.85)
 stars=cv2.GaussianBlur(stars,(0,0),0.9)*2.2
 
+import os
+EMPTY=os.environ.get('VARIANT')=='empty'      # variant: nothing inside the drop
+def seg_zoom_empty(p):
+    x=min(1,p/0.9); a0=0.5; e=a0*x*(1-x)**2+x*x*(3-2*x)
+    s=math.exp(math.log(S*1.8)*e)
+    c=C+(np.array([W/2,H/2])-C)*sm(p)
+    kf,Mf=Mpush(1.0)
+    Mc=np.float32([[s*kf,0,c[0]+s*(Mf[0,2]-C[0])],[0,s*kf,c[1]+s*(Mf[1,2]-C[1])]])
+    base=cv2.warpAffine(draw(1.0),Mc,(W,H),flags=cv2.INTER_CUBIC,borderMode=cv2.BORDER_REPLICATE)
+    sb=1.1*max(0,s-2.5)
+    if sb>0.5: base=cv2.GaussianBlur(base,(0,0),min(sb,14))
+    a=sm((p-0.60)/0.38)
+    if a<=0: return base
+    z=1.12-0.12*a
+    Mz=np.float32([[z,0,W/2*(1-z)],[0,z,H/2*(1-z)]])
+    mar=cv2.warpAffine(marco(1.45+0.80*p),Mz,(W,H),flags=cv2.INTER_LINEAR,borderMode=cv2.BORDER_REPLICATE)
+    sg=22*(1-a)**1.5
+    if sg>0.6: mar=cv2.GaussianBlur(mar,(0,0),sg)
+    return base*(1-a)+mar*a
 def seg_zoom(p):
+    if EMPTY: return seg_zoom_empty(p)
     x=min(1,p/0.82); a=0.5; e=a*x*(1-x)**2+x*x*(3-2*x)
     s=math.exp(math.log(S)*e); g=(1-1/s)/(1-1/S); tl=R0*g
     M=np.float32([[s,0,-s*tl[0]],[0,s,-s*tl[1]]])
