@@ -49,7 +49,9 @@ for _ in range(900):
 stars=cv2.GaussianBlur(stars,(0,0),0.9)*2.2
 
 import os
-EMPTY=os.environ.get('VARIANT')=='empty'      # variant: nothing inside the drop
+NOSQUAT=os.environ.get('VARIANT')=='nosquat'  # variant: empty drop, then straight to the ascent (no squat footage)
+EMPTY=os.environ.get('VARIANT')=='empty' or NOSQUAT      # variant: nothing inside the drop
+SH=0.70 if NOSQUAT else 0.0
 def seg_zoom_empty(p):
     x=min(1,p/0.9); a0=0.5; e=a0*x*(1-x)**2+x*x*(3-2*x)
     s=math.exp(math.log(S*1.8)*e)
@@ -63,7 +65,8 @@ def seg_zoom_empty(p):
     if a<=0: return base
     z=1.12-0.12*a
     Mz=np.float32([[z,0,W/2*(1-z)],[0,z,H/2*(1-z)]])
-    mar=cv2.warpAffine(marco(1.45+0.80*p),Mz,(W,H),flags=cv2.INTER_LINEAR,borderMode=cv2.BORDER_REPLICATE)
+    src=ref(4.10) if NOSQUAT else marco(1.45+0.80*p)
+    mar=cv2.warpAffine(src,Mz,(W,H),flags=cv2.INTER_LINEAR,borderMode=cv2.BORDER_REPLICATE)
     sg=22*(1-a)**1.5
     if sg>0.6: mar=cv2.GaussianBlur(mar,(0,0),sg)
     return base*(1-a)+mar*a
@@ -112,7 +115,7 @@ def seg_ref_up(tau):
     r=4.10+max(0,tau-10.55)
     img=ref(min(r,191/24))
     b=1-(tau-10.40)/0.55
-    if b>0: img=vblur(img,300*b**1.5)
+    if b>0 and not NOSQUAT: img=vblur(img,300*b**1.5)
     return img
 EC=np.array([555.,945.]); ET=np.array([540.,880.])
 rr=np.sqrt((xx-555.)**2+(yy-945.)**2); edge=np.clip((545-rr)/70,0,1); edge=(edge*edge*(3-2*edge))
@@ -150,6 +153,8 @@ def frame(tau):
             img=img+(np.exp(-d2/(2*5.0**2))*230+np.exp(-d2/(2*22.0**2))*45)[...,None]*np.array([1.0,0.85,0.7],np.float32)*bell
         return img
     if tau<9.85: return seg_zoom((tau-8.55)/1.30)
+    tau+=SH
+    if NOSQUAT and tau<14.45: return seg_ref_up(tau)
     if tau<14.45:
         a=sm((tau-10.40)/0.30)
         if a<=0: return seg_marco(tau)
@@ -157,7 +162,7 @@ def frame(tau):
         return seg_marco(min(tau,10.549))*(1-a)+seg_ref_up(tau)*a
     if tau<16.65: return seg_recede((tau-14.45)/2.20)
     return seg_recede(1.0)
-T_END=17.15
+T_END=17.15-SH
 N=int(round((T_END-T_START)*FPS))
 only=[float(x) for x in sys.argv[2:]]
 if only:
