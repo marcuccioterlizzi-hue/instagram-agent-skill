@@ -6,8 +6,8 @@ Movimento camera, se usi i preset: Dolly In / Push In lento.
 
 ## Prompt
 
-Top-down overhead shot of a handwritten sheet of white paper lying on a beige
-tablecloth with a brown floral branch pattern. The camera slowly and smoothly
+Top-down overhead shot of a handwritten sheet of white paper that fills the
+frame, lying on a beige tablecloth with a brown floral pattern. The camera slowly and smoothly
 pushes in toward the small handwritten word "MEGLIO" in blue ballpoint ink,
 until it sits in the centre of the frame. As the camera arrives, a thin
 hand-drawn line in the same blue ballpoint ink starts under the word "MEGLIO"
