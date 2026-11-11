@@ -24,11 +24,12 @@ sigla=lambda t: seq('s_f/%04d.png', (t-6.5)*30, 16)
 
 # ---- drop geometry (1080 scale), measured on ref frame index 35
 KF=cv2.imread('kf1080.png').astype(np.float32)
-DC=np.array([575.,850.]); KB=2.0           # drop centre in keyframe, push-in end scale
-C=DC.copy(); RX,RY=62.*KB,68.*KB
+NDROP=58                                   # frames of the generated drop clip used (24 fps)
+drop=lambda x: seq('d_f/%04d.png', x*(NDROP-1), NDROP)
+C=np.array([590.,1360.]); RX,RY=85.,95.
 def Mb(k):
     return np.float32([[k,0,DC[0]*(1-k)],[0,k,DC[1]*(1-k)]])
-W0=330.; R0=np.array([C[0]-0.42*W0, C[1]-0.62*W0*16/9]); S=W/W0
+W0=2.6*RX; R0=np.array([C[0]-0.42*W0, C[1]-0.62*W0*16/9]); S=W/W0
 yy,xx=np.mgrid[0:H,0:W].astype(np.float32)
 rng=np.random.default_rng(7)
 stars=np.zeros((H,W,3),np.float32)
@@ -41,8 +42,7 @@ def seg_zoom(p):
     x=min(1,p/0.82); a=0.5; e=a*x*(1-x)**2+x*x*(3-2*x)
     s=math.exp(math.log(S)*e); g=(1-1/s)/(1-1/S); tl=R0*g
     M=np.float32([[s,0,-s*tl[0]],[0,s,-s*tl[1]]])
-    Mc=np.float32([[s*KB,0,s*(DC[0]*(1-KB)-tl[0])],[0,s*KB,s*(DC[1]*(1-KB)-tl[1])]])
-    base=cv2.warpAffine(KF,Mc,(W,H),flags=cv2.INTER_CUBIC,borderMode=cv2.BORDER_REPLICATE)
+    base=cv2.warpAffine(drop(1.0),M,(W,H),flags=cv2.INTER_CUBIC,borderMode=cv2.BORDER_REPLICATE)
     c=s*(C-tl); grow=1+3.6*sm((p-0.40)/0.60)**2
     rx,ry=s*RX*grow,s*RY*grow
     rho=np.sqrt(((xx-c[0])/rx)**2+((yy-c[1])/ry)**2)
@@ -108,8 +108,7 @@ def seg_recede(u):
 hx,hy=602.,722.
 def frame(tau):
     if tau<8.55:
-        x=(tau-6.55)/2.0; k=math.exp(math.log(KB)*x**1.6)
-        img=cv2.warpAffine(KF,Mb(k),(W,H),flags=cv2.INTER_CUBIC,borderMode=cv2.BORDER_REPLICATE)
+        img=drop((tau-6.55)/2.0)
         img=img*(0.12+0.88*sm((tau-6.60)/0.75))
         a=(tau-6.55)/0.40
         if a<1:
