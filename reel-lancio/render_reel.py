@@ -23,8 +23,11 @@ marco=lambda t: seq('m_f/%04d.jpg', round((t-1.3)*30), 57)
 sigla=lambda t: seq('s_f/%04d.png', (t-6.5)*30, 16)
 
 # ---- drop geometry (1080 scale), measured on ref frame index 35
-BASE_IDX=35
-C=np.array([573.,846.]); RX,RY=126.,156.
+KF=cv2.imread('kf1080.png').astype(np.float32)
+DC=np.array([575.,850.]); KB=2.0           # drop centre in keyframe, push-in end scale
+C=DC.copy(); RX,RY=62.*KB,68.*KB
+def Mb(k):
+    return np.float32([[k,0,DC[0]*(1-k)],[0,k,DC[1]*(1-k)]])
 W0=330.; R0=np.array([C[0]-0.42*W0, C[1]-0.62*W0*16/9]); S=W/W0
 yy,xx=np.mgrid[0:H,0:W].astype(np.float32)
 rng=np.random.default_rng(7)
@@ -35,10 +38,11 @@ for _ in range(900):
 stars=cv2.GaussianBlur(stars,(0,0),0.9)*2.2
 
 def seg_zoom(p):
-    e=sm(p/0.82)**1.15
+    x=min(1,p/0.82); a=0.5; e=a*x*(1-x)**2+x*x*(3-2*x)
     s=math.exp(math.log(S)*e); g=(1-1/s)/(1-1/S); tl=R0*g
     M=np.float32([[s,0,-s*tl[0]],[0,s,-s*tl[1]]])
-    base=cv2.warpAffine(load('ref_f/%04d.png'%(BASE_IDX+1)),M,(W,H),flags=cv2.INTER_CUBIC,borderMode=cv2.BORDER_REPLICATE)
+    Mc=np.float32([[s*KB,0,s*(DC[0]*(1-KB)-tl[0])],[0,s*KB,s*(DC[1]*(1-KB)-tl[1])]])
+    base=cv2.warpAffine(KF,Mc,(W,H),flags=cv2.INTER_CUBIC,borderMode=cv2.BORDER_REPLICATE)
     c=s*(C-tl); grow=1+3.6*sm((p-0.40)/0.60)**2
     rx,ry=s*RX*grow,s*RY*grow
     rho=np.sqrt(((xx-c[0])/rx)**2+((yy-c[1])/ry)**2)
@@ -53,7 +57,7 @@ def seg_zoom(p):
     tint=np.array([1.0,0.93,0.86],np.float32)                 # BGR: slightly cool
     ins=ins*(1-0.30*q)*(1-q+q*tint) + q*np.array([26,16,8],np.float32)
     ins*= (1-0.55*q*np.clip(rho,0,1)**6)[...,None]            # darker rim
-    lum=base.max(axis=2); spec=np.clip((lum-190)/50,0,1)[...,None]*q
+    lum=base.max(axis=2); spec=np.clip((lum-175)/50,0,1)[...,None]*q
     ins=ins*(1-spec)+base*spec                                # keep the drop's own highlights
     feather=0.10+0.10*p
     m=np.clip((1-rho)/feather,0,1)[...,None]
@@ -101,11 +105,12 @@ def seg_recede(u):
     return img
 
 # highlight position for the sigla->drop speck match
-g=cv2.GaussianBlur(ref(0.70).max(axis=2),(0,0),6); g[:300]=0; g[1300:]=0
-hy,hx=np.unravel_index(np.argmax(g),g.shape)
+hx,hy=602.,722.
 def frame(tau):
     if tau<8.55:
-        r=(tau-6.55)*0.75; img=ref(r)
+        x=(tau-6.55)/2.0; k=math.exp(math.log(KB)*x**1.6)
+        img=cv2.warpAffine(KF,Mb(k),(W,H),flags=cv2.INTER_CUBIC,borderMode=cv2.BORDER_REPLICATE)
+        img=img*(0.12+0.88*sm((tau-6.60)/0.75))
         a=(tau-6.55)/0.40
         if a<1:
             a=sm(a); img=sigla(tau)*(1-a)+img*a
