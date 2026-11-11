@@ -24,9 +24,19 @@ sigla=lambda t: seq('s_f/%04d.png', (t-6.5)*30, 16)
 
 # ---- drop geometry (1080 scale), measured on ref frame index 35
 KF=cv2.imread('kf1080.png').astype(np.float32)
-NDROP=58                                   # frames of the generated drop clip used (24 fps)
-drop=lambda x: seq('d_f/%04d.png', x*(NDROP-1), NDROP)
-C=np.array([590.,1360.]); RX,RY=85.,95.
+NDROP=44                                   # frames of the generated drop clip used (24 fps)
+draw=lambda x: seq('d_f/%04d.png', x*(NDROP-1), NDROP)
+KEYS=np.array([[0,700,972],[11,702,985],[22,710,1045],[33,695,1150],[43,680,1255]],np.float32)   # tracked drop centre
+KEND=2.3; TGT=np.array([560.,1000.])
+def dpos(x):
+    f=x*(NDROP-1); return np.array([np.interp(f,KEYS[:,0],KEYS[:,1]),np.interp(f,KEYS[:,0],KEYS[:,2])])
+def Mpush(x):
+    k=math.exp(math.log(KEND)*x**1.5); d=dpos(x); t=d+(TGT-d)*sm(x)
+    return k,np.float32([[k,0,t[0]-k*d[0]],[0,k,t[1]-k*d[1]]])
+def drop(x):
+    k,M=Mpush(x)
+    return cv2.warpAffine(draw(x),M,(W,H),flags=cv2.INTER_CUBIC,borderMode=cv2.BORDER_REPLICATE)
+C=TGT.copy(); RX,RY=21.*KEND,28.*KEND
 def Mb(k):
     return np.float32([[k,0,DC[0]*(1-k)],[0,k,DC[1]*(1-k)]])
 W0=2.6*RX; R0=np.array([C[0]-0.42*W0, C[1]-0.62*W0*16/9]); S=W/W0
@@ -42,7 +52,8 @@ def seg_zoom(p):
     x=min(1,p/0.82); a=0.5; e=a*x*(1-x)**2+x*x*(3-2*x)
     s=math.exp(math.log(S)*e); g=(1-1/s)/(1-1/S); tl=R0*g
     M=np.float32([[s,0,-s*tl[0]],[0,s,-s*tl[1]]])
-    base=cv2.warpAffine(drop(1.0),M,(W,H),flags=cv2.INTER_CUBIC,borderMode=cv2.BORDER_REPLICATE)
+    kf,Mf=Mpush(1.0); Mc=np.float32([[s*kf,0,s*(Mf[0,2]-tl[0])],[0,s*kf,s*(Mf[1,2]-tl[1])]])
+    base=cv2.warpAffine(draw(1.0),Mc,(W,H),flags=cv2.INTER_CUBIC,borderMode=cv2.BORDER_REPLICATE)
     c=s*(C-tl); grow=1+3.6*sm((p-0.40)/0.60)**2
     rx,ry=s*RX*grow,s*RY*grow
     rho=np.sqrt(((xx-c[0])/rx)**2+((yy-c[1])/ry)**2)
@@ -105,7 +116,7 @@ def seg_recede(u):
     return img
 
 # highlight position for the sigla->drop speck match
-hx,hy=602.,722.
+hx,hy=706.,930.
 def frame(tau):
     if tau<8.55:
         img=drop((tau-6.55)/2.0)
